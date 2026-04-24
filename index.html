@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campo Minado HTML/CSS - Responsivo</title>
+    <style>
+        :root {
+            --grid-gap: 8px;
+            --background-color: #212529;
+            --cell-color-initial: #6c757d;   
+            --cell-color-named-html: #e34f26; /* Laranja HTML */
+            --cell-color-named-css: #e200b1;  /* Azul CSS */
+            --cell-color-revealed: #ffffff; 
+            --text-color-light: #ffffff;
+            --text-color-dark: #da0a0a;
+            --border-color: #dee2e6;
+            --border-radius: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        h1 {
+            color: #f8f9fa;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .grid-container {
+            display: grid;
+            width: 100%;
+            max-width: 1400px;
+            /* Layout 10x10 responsivo */
+            grid-template-columns: repeat(10, 1fr);
+            gap: var(--grid-gap);
+        }
+
+        .cell {
+            aspect-ratio: 1 / 1; 
+            width: 100%;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-weight: bold;
+            padding: 5px;
+            box-sizing: border-box;
+            transition: transform 0.3s ease, background-color 0.3s, color 0.3s;
+            user-select: none;
+            background-color: var(--cell-color-initial);
+            color: var(--text-color-light);
+            /* Fonte responsiva para o número inicial */
+            font-size: clamp(16px, 4vw, 32px);
+        }
+
+        .cell:not(.revealed):hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        /* Estado 2: Nome da tag/propriedade revelado */
+        .cell.named.type-html {
+            background-color: var(--cell-color-named-html);
+        }
+        
+        .cell.named.type-css {
+            background-color: var(--cell-color-named-css);
+        }
+        
+        .cell.named {
+            color: var(--text-color-light);
+            /* Fonte responsiva para o nome do conceito */
+            font-size: clamp(12px, 2vw, 18px);
+        }
+        
+        /* Estado 3: Resposta final revelada */
+        .cell.revealed {
+            background-color: var(--cell-color-revealed);
+            color: var(--text-color-dark);
+            border: 1px solid var(--border-color);
+            font-weight: normal;
+            cursor: default;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 10px;
+             /* Fonte responsiva para a resposta */
+            font-size: clamp(10px, 1.4vw, 15px);
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Campo Minado: HTML & CSS</h1>
+<div class="grid-container" id="minefield"></div>
+
+<script>
+    const minefield = document.getElementById('minefield');
+    const items = [
+        // 50 Tags HTML
+        { type: 'html', name: '<div>', answer: 'Define uma divisão ou seção genérica em um documento.' },
+        { type: 'html', name: '<span>', answer: 'Define um contêiner em linha para marcar parte de um texto.' },
+        { type: 'html', name: '<p>', answer: 'Define um parágrafo.' },
+        { type: 'html', name: '<a>', answer: 'Define um hiperlink para outra página ou recurso.' },
+        { type: 'html', name: '<img>', answer: 'Incorpora uma imagem no documento.' },
+        { type: 'html', name: '<ul>', answer: 'Define uma lista de itens não ordenada.' },
+        { type: 'html', name: '<ol>', answer: 'Define uma lista de itens ordenada.' },
+        { type: 'html', name: '<li>', answer: 'Define um item dentro de uma lista (<ul> ou <ol>).' },
+        { type: 'html', name: '<h1>-<h6>', answer: 'Definem cabeçalhos de diferentes níveis de importância.' },
+        { type: 'html', name: '<header>', answer: 'Define um cabeçalho para um documento ou seção.' },
+        { type: 'html', name: '<footer>', answer: 'Define um rodapé para um documento ou seção.' },
+        { type: 'html', name: '<nav>', answer: 'Define um conjunto de links de navegação.' },
+        { type: 'html', name: '<main>', answer: 'Especifica o conteúdo principal e único de um documento.' },
+        { type: 'html', name: '<section>', answer: 'Define uma seção temática em um documento.' },
+        { type: 'html', name: '<article>', answer: 'Define um conteúdo autônomo e independente (ex: post de blog).' },
+        { type: 'html', name: '<aside>', answer: 'Define um conteúdo à parte do conteúdo principal (ex: sidebar).' },
+        { type: 'html', name: '<form>', answer: 'Cria um formulário para entrada de dados do usuário.' },
+        { type: 'html', name: '<input>', answer: 'Define um campo de entrada de dados dentro de um formulário.' },
+        { type: 'html', name: '<button>', answer: 'Define um botão clicável.' },
+        { type: 'html', name: '<label>', answer: 'Define um rótulo descritivo para um elemento <input>.' },
+        { type: 'html', name: '<textarea>', answer: 'Define uma área de entrada de texto de várias linhas.' },
+        { type: 'html', name: '<select>', answer: 'Cria uma lista de opções suspensa (dropdown).' },
+        { type: 'html', name: '<option>', answer: 'Define uma opção dentro de uma lista <select>.' },
+        { type: 'html', name: '<table>', answer: 'Cria uma tabela para exibir dados.' },
+        { type: 'html', name: '<tr>', answer: 'Define uma linha (table row) em uma tabela.' },
+        { type: 'html', name: '<td>', answer: 'Define uma célula de dados (table data) em uma tabela.' },
+        { type: 'html', name: '<th>', answer: 'Define uma célula de cabeçalho (table header) em uma tabela.' },
+        { type: 'html', name: '<thead>', answer: 'Agrupa o conteúdo do cabeçalho em uma tabela.' },
+        { type: 'html', name: '<tbody>', answer: 'Agrupa o conteúdo principal do corpo em uma tabela.' },
+        { type: 'html', name: '<tfoot>', answer: 'Agrupa o conteúdo do rodapé em uma tabela.' },
+        { type: 'html', name: '<br>', answer: 'Insere uma quebra de linha única.' },
+        { type: 'html', name: '<hr>', answer: 'Cria uma linha horizontal para separação temática.' },
+        { type: 'html', name: '<strong>', answer: 'Indica que o texto tem grande importância (negrito por padrão).' },
+        { type: 'html', name: '<em>', answer: 'Enfatiza um texto (itálico por padrão).' },
+        { type: 'html', name: '<blockquote>', answer: 'Define uma seção que é citada de outra fonte.' },
+        { type: 'html', name: '<code>', answer: 'Define um trecho de código de computador.' },
+        { type: 'html', name: '<pre>', answer: 'Define texto pré-formatado, mantendo espaços e quebras de linha.' },
+        { type: 'html', name: '<iframe>', answer: 'Incorpora um documento HTML de outra fonte na página atual.' },
+        { type: 'html', name: '<!DOCTYPE>', answer: 'Instrução que define a versão do HTML para o navegador.' },
+        { type: 'html', name: '<html>', answer: 'É o elemento raiz que envolve todo o conteúdo da página.' },
+        { type: 'html', name: '<head>', answer: 'Contém metadados sobre o documento (título, links, scripts).' },
+        { type: 'html', name: '<title>', answer: 'Define o título da página, exibido na aba do navegador.' },
+        { type: 'html', name: '<meta>', answer: 'Fornece metadados, como charset e viewport.' },
+        { type: 'html', name: '<link>', answer: 'Vincula recursos externos, principalmente folhas de estilo CSS.' },
+        { type: 'html', name: '<style>', answer: 'Contém código CSS diretamente no documento HTML.' },
+        { type: 'html', name: '<script>', answer: 'Incorpora ou referencia um código JavaScript.' },
+        { type: 'html', name: '<noscript>', answer: 'Define um conteúdo a ser exibido se os scripts estiverem desabilitados.' },
+        { type: 'html', name: '<figure>', answer: 'Especifica conteúdo autocontido, como imagens e diagramas.' },
+        { type: 'html', name: '<figcaption>', answer: 'Define uma legenda para um elemento <figure>.' },
+        { type: 'html', name: '<video>', answer: 'Incorpora conteúdo de vídeo no documento.' },
+
+        
+    ];
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    shuffle(items);
+
+    items.forEach((item, index) => {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        
+        cell.textContent = index + 1;
+        
+        cell.dataset.name = item.name;
+        cell.dataset.answer = item.answer;
+        cell.dataset.type = item.type; // Guarda o tipo (html ou css)
+
+        cell.addEventListener('click', function() {
+            if (this.classList.contains('revealed')) {
+                return;
+            }
+            if (this.classList.contains('named')) {
+                this.classList.remove('named', 'type-html', 'type-css');
+                this.classList.add('revealed');
+                this.textContent = this.dataset.answer;
+                return;
+            }
+            if (!this.classList.contains('named')) {
+                this.classList.add('named');
+                // Adiciona uma classe específica para o tipo para podermos colorir diferente
+                this.classList.add(`type-${this.dataset.type}`);
+                this.textContent = this.dataset.name;
+                return;
+            }
+        });
+
+        minefield.appendChild(cell);
+    });
+</script>
+
+</body>
+</html>
